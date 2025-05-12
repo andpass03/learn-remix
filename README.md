@@ -3,7 +3,11 @@
 - 📖 [Remix docs](https://remix.run/docs)
 
 ## Development
+Run for create utente:
 
+```shellscript
+npx ts-node app/dml.ts
+```
 Run the dev server:
 
 ```shellscript
