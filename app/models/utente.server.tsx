@@ -7,13 +7,13 @@ export async function getUtenteByUsername(username: string) {
     });
 }
 
-export async function createUtente(data: { nome: string, cognome: string, email: string, username: string, password: string, bio: string }) {
+export async function createUtente(data: { nome: string, cognome: string, email: string, username: string, password: string, bio: string | null}) {
     return prisma.utente.create({
         data,
     });
 }
 
-export async function updateUtente(id: number, data: { nome: string, cognome: string, email: string, username: string, bio: string }) {
+export async function updateUtente(id: number, data: { nome: string, cognome: string, email: string, bio: string }) {
     return prisma.utente.update({
         where: { id },
         data,

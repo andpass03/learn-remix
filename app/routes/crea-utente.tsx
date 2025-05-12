@@ -1,6 +1,6 @@
 import { ActionFunction, redirect } from "@remix-run/node";
-import { prisma } from "~/utils/db.server";
 import {sessionStorage} from "~/utils/sessions";
+import {createUtente, getUtenteByUsername} from "~/models/utente.server";
 
 export const action: ActionFunction = async ({ request }) => {
     const formData = new URLSearchParams(await request.text());
@@ -9,7 +9,7 @@ export const action: ActionFunction = async ({ request }) => {
     const username = formData.get("username");
     const email = formData.get("email");
     const password = formData.get("password");
-    const existingUser = await prisma.utente.findUnique({ where: { username } });
+    const existingUser = await getUtenteByUsername(username)/*await prisma.utente.findUnique({ where: { username } })*/;
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     if (existingUser) {
         session.flash("flash", { type: "error", message: "Username già utilizzato." });
@@ -21,7 +21,8 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     if (typeof email === "string" && typeof password === "string") {
-        await prisma.utente.create({
+        await createUtente({nome, cognome, email, username, password, bio: null})
+        /*await prisma.utente.create({
             data: {
                 nome,
                 cognome,
@@ -29,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
                 email,
                 password,
             },
-        });
+        });*/
     }
     session.flash("flash", { type: "success", message: "Utente creato con successo." });
     return redirect("/home", {

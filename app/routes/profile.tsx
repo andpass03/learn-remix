@@ -3,6 +3,7 @@ import { Form, useActionData } from "@remix-run/react";
 import {useLoaderData} from "@remix-run/react";
 import { requireUser } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
+import {updateUtente} from "~/models/utente.server";
 
 
 type ProfileData = {
@@ -36,10 +37,11 @@ export const action: ActionFunction = async ({request}) => {
     const email = formData.get("email")?.toString() ?? "";
     const bio = formData.get("bio")?.toString() ?? "";
     const user = await requireUser(request);
-    await prisma.utente.update({
+    /*await prisma.utente.update({
         where: { id: user.id },
         data: { nome, cognome, email, bio },
-    });
+    });*/
+    await updateUtente(user.id, {nome, cognome, email, bio});
 
     return json({
         message: "Profilo aggiornato",
