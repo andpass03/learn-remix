@@ -20,7 +20,7 @@ authenticator.use(
         console.log("LOGIN RESULT", result);
         if (result.success && result.user) {
             const session = await sessionStorage.getSession();
-            session.set("user", { id: result.user.id, username: result.user.username });
+            session.set("user",  result.user );
             const cookieHeader = await sessionStorage.commitSession(session);
             return { user: result.user, cookieHeader };
         }

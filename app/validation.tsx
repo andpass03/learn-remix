@@ -14,5 +14,8 @@ export async function validateLoginData(username: string, password: string) {
         return { success: false, message: "Credenziali non valide." };
     }
 
-    return { success: true, message: "Accesso riuscito!", "user": user };
+    const { password: _, ...userWithoutPassword } = user;
+    console.log(userWithoutPassword);
+
+    return { success: true, message: "Accesso riuscito!", user: userWithoutPassword };
 }

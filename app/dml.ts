@@ -10,6 +10,7 @@ async function dml() {
                 username: "admin1",
                 password: "admin",
                 bio: "test bio",
+                isAdmin: true,
             },
         });
 

@@ -9,6 +9,7 @@ export const action: ActionFunction = async ({ request }) => {
     const username = formData.get("username");
     const email = formData.get("email");
     const password = formData.get("password");
+    const isAdmin = formData.get("isAdmin") === "on";
     const existingUser = await getUtenteByUsername(username)/*await prisma.utente.findUnique({ where: { username } })*/;
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     if (existingUser) {
@@ -21,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     if (typeof email === "string" && typeof password === "string") {
-        await createUtente({nome, cognome, email, username, password, bio: null})
+        await createUtente({nome, cognome, email, username, password, isAdmin, bio: null})
         /*await prisma.utente.create({
             data: {
                 nome,

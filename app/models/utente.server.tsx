@@ -7,7 +7,7 @@ export async function getUtenteByUsername(username: string) {
     });
 }
 
-export async function createUtente(data: { nome: string, cognome: string, email: string, username: string, password: string, bio: string | null}) {
+export async function createUtente(data: { nome: string, cognome: string, email: string, username: string, password: string, isAdmin : boolean, bio: string | null}) {
     return prisma.utente.create({
         data,
     });

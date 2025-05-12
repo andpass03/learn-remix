@@ -12,7 +12,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     const cities = await prisma.citta.findMany({
         where: { userId: user.id },
     });
-    const isAdmin = user.username === 'admin';
+    console.log("home ",user);
+    const isAdmin = user.isAdmin;
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
 
     const message = session.get("flash") || null;
@@ -47,12 +48,13 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Home() {
-    const { cities, isAdmin, message} = useLoaderData<typeof loader>();
+    const { user, cities, isAdmin, message} = useLoaderData<typeof loader>();
     const [showModal, setShowModal] = useState(false);
     return  (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <main className="max-w-6xl mx-auto p-8">
-                <h1 className="text-3xl font-bold mb-6">Benvenuto nella homepage</h1>
+                <h2 className="text-3xl font-bold mb-6">Benvenuto nella homepage</h2>
+                <h1 className="text-6xl font-bold mb-6 text-purple-500">{user.nome} {user.cognome}</h1>
                 {message && (
                     <p
                         className={`p-2 mb-4 rounded-md text-white ${

@@ -77,6 +77,18 @@ export default function CreaUtenteModal({isAdmin}: CreaUtenteModalProps) {
                                     required
                                 />
                             </div>
+                            <div className="mb-4 flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="isAdmin"
+                                    name="isAdmin"
+                                    className="mr-2"
+                                />
+                                <label htmlFor="isAdmin" className="text-sm font-medium">
+                                    Imposta come Admin
+                                </label>
+                            </div>
+
                             <button type="submit" className="bg-green-600 text-white p-2 rounded-md">
                                 Registra Utente
                             </button>

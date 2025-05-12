@@ -15,6 +15,7 @@ model Utente {
   bio      String?
   username String  @unique
   password String
+  isAdmin  Boolean @default(false)
   Citta  Citta[]
 }
 
