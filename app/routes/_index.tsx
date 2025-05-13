@@ -5,7 +5,6 @@ import {ActionFunction, json, MetaFunction, redirect} from "@remix-run/node";
 export const action: ActionFunction = async ({ request }) => {
   try {
     const user = await authenticator.authenticate("user-pass", request);
-    console.log("Autenticato:", user);
     return redirect("/home", {
       headers: {
         "Set-Cookie": user.cookieHeader,

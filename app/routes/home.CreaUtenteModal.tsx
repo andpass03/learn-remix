@@ -1,30 +1,23 @@
-import {useState} from "react";
+import {Link} from "@remix-run/react";
+import { useActionData } from "@remix-run/react";
 
-interface CreaUtenteModalProps {
-    isAdmin?: boolean;
-}
+type ActionData = {
+    errors?: Record<string, string[]>;
+};
 
-export default function CreaUtenteModal({isAdmin}: CreaUtenteModalProps) {
-    const [showModal, setShowModal] = useState(false);
-    if (!isAdmin) return null;
+export default function HomeCreaUtenteModal() {
+    const actionData = useActionData<ActionData>();
+    const errors = actionData?.errors ?? {};
     return (
         <>
-            <button
-                onClick={() => setShowModal(true)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-            >
-                Crea Utente
-            </button>
-
-            {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md shadow-lg relative">
-                        <button
-                            onClick={() => setShowModal(false)}
+                        <Link
+                            to="/home"
                             className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 dark:hover:text-white"
                         >
                             ✕
-                        </button>
+                        </Link>
                         <h2 className="text-xl font-semibold mb-4">Crea un nuovo utente</h2>
                         <form method="POST" action="/crea-utente">
                             <div className="mb-4">
@@ -76,6 +69,7 @@ export default function CreaUtenteModal({isAdmin}: CreaUtenteModalProps) {
                                     className="w-full p-2 mt-1 border rounded-md"
                                     required
                                 />
+                                {errors.password && <p className="text-red-500 text-sm">{errors.password[0]}</p>}
                             </div>
                             <div className="mb-4 flex items-center">
                                 <input
@@ -95,7 +89,7 @@ export default function CreaUtenteModal({isAdmin}: CreaUtenteModalProps) {
                         </form>
                     </div>
                 </div>
-            )}
+            )
         </>
     );
 }

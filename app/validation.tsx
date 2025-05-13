@@ -15,7 +15,6 @@ export async function validateLoginData(username: string, password: string) {
     }
 
     const { password: _, ...userWithoutPassword } = user;
-    console.log(userWithoutPassword);
 
     return { success: true, message: "Accesso riuscito!", user: userWithoutPassword };
 }

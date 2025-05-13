@@ -17,7 +17,6 @@ authenticator.use(
         const password = form.get("password")?.toString() ?? "";
 
         const result = await validateLoginData(username, password);
-        console.log("LOGIN RESULT", result);
         if (result.success && result.user) {
             const session = await sessionStorage.getSession();
             session.set("user",  result.user );
@@ -32,9 +31,7 @@ authenticator.use(
 
 export async function requireUser(request: Request) {
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
-    console.log("SESSION RESULT", session);
     const user = session.get("user");
-    console.log("USER RESULT", user);
     if (!user) throw redirect("/");
 
     return user;
