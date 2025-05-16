@@ -5,14 +5,7 @@ import { UtenteSchema } from "~/utils/validation";
 
 
 export const action: ActionFunction = async ({ request }) => {
-    /*const formData = new URLSearchParams(await request.text());*/
     const formData = await request.formData();
-    /*const nome = formData.get("nome");
-    const cognome = formData.get("cognome");
-    const username = formData.get("username");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const isAdmin = formData.get("isAdmin") === "on";*/
     const session = await sessionStorage.getSession(request.headers.get("Cookie"));
     const rawData = {
         nome: formData.get("nome"),
@@ -20,14 +13,13 @@ export const action: ActionFunction = async ({ request }) => {
         username: formData.get("username"),
         email: formData.get("email"),
         password: formData.get("password"),
-        isAdmin: formData.get("isAdmin") === "on", // checkbox -> boolean
+        isAdmin: formData.get("isAdmin") === "on", 
     };
     const result = UtenteSchema.safeParse(rawData);
     if (!result.success) {
         const allErrors = Object.values(result.error.flatten().fieldErrors)
             .flat()
-            .filter(Boolean); // rimuove eventuali undefined/null
-
+            .filter(Boolean); 
         session.flash("flash", {
             type: "error",
             messages: allErrors,
@@ -54,16 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
         ...result.data,
         bio: null,
     });
-    /*await createUtente({nome, cognome, email, username, password, isAdmin, bio: null})*/
-        /*await prisma.utente.create({
-            data: {
-                nome,
-                cognome,
-                username,
-                email,
-                password,
-            },
-        });*/
+
     session.flash("flash", { type: "success", message: "Utente creato con successo." });
     return redirect("/home", {
         headers: {
@@ -71,3 +54,5 @@ export const action: ActionFunction = async ({ request }) => {
         },
     });
 };
+
+

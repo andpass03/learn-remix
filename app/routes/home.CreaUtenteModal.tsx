@@ -1,13 +1,68 @@
 import {Link} from "@remix-run/react";
 import { useActionData } from "@remix-run/react";
+import { ActionFunction, redirect, json} from "@remix-run/node";
+import {sessionStorage} from "~/utils/sessions";
+import {createUtente, getUtenteByUsername} from "~/models/utente.server";
+import { UtenteSchema } from "~/utils/validation";
 
 type ActionData = {
-    errors?: Record<string, string[]>;
+  success?: boolean;
+  errors?: Record<string, string[]>;
+  values?: Record<string, any>;
+};
+
+export const action: ActionFunction = async ({ request }) => {
+    const formData = await request.formData();
+    const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+    const rawData = {
+        nome: formData.get("nome"),
+        cognome: formData.get("cognome"),
+        username: formData.get("username"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        isAdmin: formData.get("isAdmin") === "on", 
+    };
+    const result = UtenteSchema.safeParse(rawData);
+    const errors: Record<string, string[]> = {};
+
+    
+    if (!result.success) {
+        Object.assign(errors, result.error.flatten().fieldErrors);
+    }
+    
+    const existingUser = await getUtenteByUsername(rawData.username as string);
+    if (existingUser) {
+        errors.username = ["Username già utilizzato"];
+    }
+
+    if (Object.keys(errors).length > 0) {
+        return json<ActionData>(
+            { success: false, errors, values: rawData },
+            { status: 400 }
+        );
+    }   
+
+    await createUtente({
+        ...result.data,
+        bio: null,
+    });
+
+    session.flash("flash", {
+        type: "success",
+        message: "Utente creato con successo.",
+    });
+
+    return redirect("/home", {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session),
+    },
+  });
 };
 
 export default function HomeCreaUtenteModal() {
     const actionData = useActionData<ActionData>();
     const errors = actionData?.errors ?? {};
+    const values = actionData?.values ?? {};
     return (
         <>
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -19,73 +74,42 @@ export default function HomeCreaUtenteModal() {
                             ✕
                         </Link>
                         <h2 className="text-xl font-semibold mb-4">Crea un nuovo utente</h2>
-                        <form method="POST" action="/crea-utente">
-                            <div className="mb-4">
-                                <label htmlFor="nome" className="block text-sm font-medium">Nome</label>
-                                <input
-                                    type="text"
-                                    id="nome"
-                                    name="nome"
-                                    className="w-full p-2 mt-1 border rounded-md"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="cognome" className="block text-sm font-medium">Cognome</label>
-                                <input
-                                    type="text"
-                                    id="cognome"
-                                    name="cognome"
-                                    className="w-full p-2 mt-1 border rounded-md"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="username" className="block text-sm font-medium">Username</label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
-                                    className="w-full p-2 mt-1 border rounded-md"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="email" className="block text-sm font-medium">Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    className="w-full p-2 mt-1 border rounded-md"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="password" className="block text-sm font-medium">Password</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    className="w-full p-2 mt-1 border rounded-md"
-                                    required
-                                />
-                                {errors.password && <p className="text-red-500 text-sm">{errors.password[0]}</p>}
-                            </div>
-                            <div className="mb-4 flex items-center">
-                                <input
-                                    type="checkbox"
-                                    id="isAdmin"
-                                    name="isAdmin"
-                                    className="mr-2"
-                                />
-                                <label htmlFor="isAdmin" className="text-sm font-medium">
-                                    Imposta come Admin
-                                </label>
-                            </div>
+                        <form method="POST">
+                            {["nome", "cognome", "username", "email", "password"].map((field) => (
+                            <div key={field} className="mb-4">
+                            <label htmlFor={field} className="block text-sm font-medium">
+                                {field[0].toUpperCase() + field.slice(1)}
+                            </label>
+                            <input
+                                type={field === "password" ? "password" : "text"}
+                                id={field}
+                                name={field}
+                                className="w-full p-2 mt-1 border rounded-md"
+                                defaultValue={values[field] || ""}
+                            />
+                            {errors[field]?.map((errorMsg, idx) => (
+                            <p key={idx} className="text-red-500 text-sm">
+                                {errorMsg}
+                            </p>
+                            ))}
+                                </div>
+                            ))}
+                                <div className="mb-4 flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="isAdmin"
+                                        name="isAdmin"
+                                        className="mr-2"
+                                        defaultChecked={values.isAdmin === true}
+                                    />
+                                    <label htmlFor="isAdmin" className="text-sm font-medium">
+                                        Imposta come Admin
+                                    </label>
+                                </div>
 
-                            <button type="submit" className="bg-green-600 text-white p-2 rounded-md">
-                                Registra Utente
-                            </button>
+                                <button type="submit" className="bg-green-600 text-white p-2 rounded-md">
+                                    Registra Utente
+                                </button>
                         </form>
                     </div>
                 </div>
