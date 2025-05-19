@@ -8,11 +8,11 @@ export const action: ActionFunction = async ({ request }) => {
     const formData = new URLSearchParams(await request.text());
     const nome = formData.get("name");
     const descrizione = formData.get("description");
-    if (nome && descrizione) {
+    if (nome) {
         await prisma.citta.create({
             data: {
                 nome,
-                descrizione,
+                descrizione: descrizione || null,
                 userId: user.id,
             },
         });
@@ -39,7 +39,7 @@ export default function HomeAggiungiCitta() {
                     </div>
                     <div className="mb-4">
                         <label htmlFor="description" className="block text-sm font-medium">Descrizione</label>
-                        <textarea id="description" name="description" className="w-full p-2 mt-1 border rounded-md" required />
+                        <textarea id="description" name="description" className="w-full p-2 mt-1 border rounded-md" />
                     </div>
                     <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Salva Città</button>
                 </form>
