@@ -27,7 +27,7 @@ export const links = () => [
 
 
 export const action: ActionFunction = async ({ request }) => {
-  return logout(request); // Esegui la funzione di logout che distrugge la sessione
+  return logout(request); 
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {

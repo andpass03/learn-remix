@@ -59,7 +59,7 @@ export default function Index() {
             {actionData && (
                 <p className="text-red-500">{actionData.message}</p>
             )}
-            <button type="submit" className="mt-4 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">
+            <button type="submit" className="w-72 mt-4 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">
               Login
             </button>
           </Form>

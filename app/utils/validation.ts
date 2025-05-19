@@ -7,11 +7,7 @@ export const UtenteSchema = z
         username: z.string(),
         email: z.string().email("Email non valida"),
         password: z.string(),
-            /*.min(6, "La password deve essere lunga almeno 6 caratteri")
-            .regex(
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/,
-                "La password deve contenere almeno una maiuscola, una minuscola, un numero e un carattere speciale"
-            ),    isAdmin: z.boolean().optional(),*/
+        isAdmin: z.boolean().optional(),
     })
     .superRefine((data, ctx) => {
         const password = data.password;
